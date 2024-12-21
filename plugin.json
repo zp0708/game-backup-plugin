@@ -1,0 +1,63 @@
+{
+  "pluginName": "Game Backup Save Manager",
+  "description": "管理游戏存档，支持存档复制与选择",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "logo": "logo.png",
+  "preload": "preload.js", 
+  "features": [
+    {
+      "code": "backup",
+      "explain": "备份存档",
+      "cmds": ["backup", "备份"]
+    },
+    {
+      "code": "bu-open",
+      "explain": "打开当前备份位置",
+      "cmds": ["bu-open", "打开备份", "打开备份位置"]
+    },
+    {
+      "code": "bu-delete-clear",
+      "explain": "清空已删除的备份",
+      "cmds": ["bu-delete-clear", "清空删除", "清空回收站"]
+    },
+    {
+      "code": "bu-add",
+      "explain": "添加新的备份位置",
+      "cmds": ["bu-add", "添加备份", "新建备份"]
+    },
+    {
+      "code": "bu-select",
+      "explain": "选择备份和存档目录",
+      "cmds": ["bu-select", "选择目录", "设置目录"]
+    },
+    {
+      "code": "bu-remove",
+      "explain": "删除备份位置",
+      "cmds": ["bu-remove", "删除备份位置", "移除备份"]
+    },
+    {
+      "code": "bu-use",
+      "explain": "使用备份存档",
+      "cmds": ["bu-use", "使用存档", "恢复存档"]
+    },
+    {
+      "code": "bu-delete",
+      "explain": "删除备份存档",
+      "cmds": ["bu-delete", "删除存档"]
+    },
+    {
+      "code": "bu-folder",
+      "explain": "设置全局备份文件夹",
+      "cmds": ["bu-folder", "设置备份文件夹"]
+    },
+    {
+      "code": "bu-folder-remove",
+      "explain": "移除全局备份文件夹",
+      "cmds": ["bu-folder-remove", "移除备份文件夹"]
+    }
+  ],
+  "permissions": [
+    "screen-capture"
+  ]
+}
