@@ -30,6 +30,14 @@ function deleteFolderRecursive(path) {
     }
 }
 
+function fuzzySearch(text, query) {
+    const pattern = query.split('').map(char => 
+        char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    ).join('.*');
+    const regex = new RegExp(pattern, 'i');
+    return regex.test(text);
+}
+
 module.exports = {
     feature: {
         mode: "list",
@@ -89,6 +97,68 @@ module.exports = {
                     console.error('获取备份列表失败:', error);
                     callbackSetList([{
                         title: "获取备份列表失败",
+                        description: error.message,
+                        icon: "logo.png"
+                    }]);
+                }
+            },
+            search: (action, searchWord, callbackSetList) => {
+                try {
+                    const config = configModule.getConfig();
+                    const currentBackup = configModule.getCurrentBackupInfo();
+                    
+                    const baseDir = config.backupFolder || config.backupRoot;
+                    if (!baseDir) {
+                        callbackSetList([{
+                            title: "未选择备份位置",
+                            description: "请先设置备份位置",
+                            icon: "logo.png"
+                        }]);
+                        return;
+                    }
+
+                    const backupNameDir = config.backupFolder ? path.join(baseDir, currentBackup.name) : baseDir;
+                    const savedDir = path.join(backupNameDir, 'saved');
+
+                    if (!fs.existsSync(savedDir)) {
+                        callbackSetList([{
+                            title: "没有找到备份文件夹",
+                            description: savedDir,
+                            icon: "logo.png"
+                        }]);
+                        return;
+                    }
+
+                    const query = searchWord.trim().toLowerCase();
+                    const folders = fs.readdirSync(savedDir)
+                        .filter(item => fs.statSync(path.join(savedDir, item)).isDirectory())
+                        .filter(folder => !query || fuzzySearch(folder.toLowerCase(), query))
+                        .map(folder => {
+                            const folderPath = path.join(savedDir, folder);
+                            return {
+                                title: `${currentBackup.name}/${folder}`,
+                                description: `${new Date(fs.statSync(folderPath).mtime).toLocaleString()} - 点击使用此存档`,
+                                icon: "logo.png",
+                                folder: folder,
+                                time: fs.statSync(folderPath).mtime.getTime()
+                            };
+                        })
+                        .sort((a, b) => b.time - a.time);
+
+                    if (folders.length === 0) {
+                        callbackSetList([{
+                            title: query ? "未找到匹配的备份" : "没有找到任何备份存档",
+                            description: savedDir,
+                            icon: "logo.png"
+                        }]);
+                        return;
+                    }
+
+                    callbackSetList(folders);
+                } catch (error) {
+                    console.error('搜索备份失败:', error);
+                    callbackSetList([{
+                        title: "搜索备份失败",
                         description: error.message,
                         icon: "logo.png"
                     }]);
